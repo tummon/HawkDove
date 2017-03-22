@@ -4,7 +4,7 @@ import csv
 MUTATION_PROB = 99.9
 CROSSOVER_PROB = 75
 GENERATIONS = 1000
-V = 40
+V = 60
 C = 100
 
 
@@ -38,18 +38,18 @@ def fitness(chromosome, population):
             # Dove Hawk you get 0 payoff so do nothing
 
             # Dawkins' Hawk Dove
-            # elif player_choice == 0 and other_player == 0:
-            #     # Dove Dove
-            #     chance = random()
-            #     if chance <= 0.5:
-            #         total_payoff += (V-10)
-            #     else:
-            #         total_payoff -= 10
-
-            # Regular Hawk Dove
             elif player_choice == 0 and other_player == 0:
                 # Dove Dove
-                total_payoff += V/2
+                chance = random()
+                if chance <= 0.5:
+                    total_payoff += (V-10)
+                else:
+                    total_payoff -= 10
+
+            # Regular Hawk Dove
+            # elif player_choice == 0 and other_player == 0:
+            #     # Dove Dove
+            #     total_payoff += V/2
 
         payoff += total_payoff/5
 
@@ -132,19 +132,28 @@ pop = initialise_population()
 
 # Run the algorithm
 i = 0
-total = 0
 amount_of_hawks_per_generation = list()
+amount_of_doves_per_generation = list()
 for i in range(GENERATIONS):
     pop = evolve(pop)
-    total = 0
+    total_hawk = 0
+    total_dove = 0
     for x in pop:
-        total += sum(x)
+        total_hawk += sum(x)
+        total_dove += abs(sum(x)-len(x))
     # Prints the fitness of the first chromosome, just to have an idea of how the algorithm is working
+    print("-----------------------------------------------")
     print(pop[0])
     print("Generation: {}".format((i+1)))
-    print("Hawks: {}".format(total/100))
-    amount_of_hawks_per_generation.append(total/100)
 
-with open('num_hawks_' + str(C) + '_' + str(V) + '.csv', 'w') as myfile:
+    print("Hawks: {}".format(total_hawk/100))
+    print("Doves: {}".format(total_dove/100))
+    print("-----------------------------------------------")
+
+    amount_of_hawks_per_generation.append(total_hawk/100)
+    amount_of_doves_per_generation.append(total_dove/100)
+
+with open('hawks_and_doves_' + str(C) + '_' + str(V) + '.csv', 'w') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(amount_of_hawks_per_generation)
+    wr.writerow(amount_of_doves_per_generation)
