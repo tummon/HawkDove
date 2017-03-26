@@ -4,13 +4,13 @@ import csv
 MUTATION_PROB = 99.9
 CROSSOVER_PROB = 75
 GENERATIONS = 1000
-V = 60
+V = 10
 C = 100
 
 
 def initialise_population():
     """Returns a list of 100 lists each of which containing 100 elements which are either 1's or 0's."""
-    return [[randint(0, 1) for i in range(100)] for x in range(100)]
+    return [[randint(0, 2) for i in range(100)] for x in range(100)]
 
 
 def fitness(chromosome, population):
@@ -35,7 +35,12 @@ def fitness(chromosome, population):
                 # Hawk Dove
                 total_payoff += V
 
+            elif player_choice == 1 and other_player == 2:
+                # Hawk Big Dove
+                total_payoff += V-10
+
             # Dove Hawk you get 0 payoff so do nothing
+            # Dove Big Dove you get 0 payoff so do nothing
 
             # Dawkins' Hawk Dove
             elif player_choice == 0 and other_player == 0:
@@ -50,6 +55,21 @@ def fitness(chromosome, population):
             # elif player_choice == 0 and other_player == 0:
             #     # Dove Dove
             #     total_payoff += V/2
+
+            elif player_choice == 2 and other_player == 2:
+                chance = random()
+                if chance <= 0.5:
+                    total_payoff += (V-20)
+                else:
+                    total_payoff -= 20
+
+            elif player_choice == 2 and other_player == 0:
+                # Big Dove Small Dove
+                total_payoff += V
+
+            elif player_choice == 2 and other_player == 1:
+                # Big Dove Hawk
+                total_payoff -= 10
 
         payoff += total_payoff/5
 
@@ -79,14 +99,14 @@ def random_split_crossover(chromo1, chromo2):
 
 
 def mutate(chromosome):
-    """Randomly mutates flips a 1 to a 0 or vice versa in a list."""
+    """Randomly mutates ."""
 
     mutated_chromo = list()
     for x in chromosome:
         # Mutates depending on how big the mutation probability is
         if (random()*100) > MUTATION_PROB:
             # Switches a 1 to a 0 or vice versa
-            x = (x + 1) % 2
+            x = (x + (randint(1, 2))) % 3
         mutated_chromo.append(x)
     return mutated_chromo
 
@@ -133,27 +153,33 @@ pop = initialise_population()
 # Run the algorithm
 i = 0
 amount_of_hawks_per_generation = list()
-amount_of_doves_per_generation = list()
+amount_of_small_doves_per_generation = list()
+amount_of_big_doves_per_generation = list()
 for i in range(GENERATIONS):
     pop = evolve(pop)
     total_hawk = 0
-    total_dove = 0
+    total_small_dove = 0
+    total_big_dove = 0
     for x in pop:
-        total_hawk += sum(x)
-        total_dove += abs(sum(x)-len(x))
+        total_hawk += x.count(1)
+        total_small_dove += x.count(0)
+        total_big_dove += x.count(2)
     # Prints the fitness of the first chromosome, just to have an idea of how the algorithm is working
     print("-----------------------------------------------")
     print(pop[0])
     print("Generation: {}".format((i+1)))
 
     print("Hawks: {}".format(total_hawk/100))
-    print("Doves: {}".format(total_dove/100))
+    print("Small Doves: {}".format(total_small_dove/100))
+    print("Big Doves: {}".format(total_big_dove/100))
     print("-----------------------------------------------")
 
     amount_of_hawks_per_generation.append(total_hawk/100)
-    amount_of_doves_per_generation.append(total_dove/100)
+    amount_of_small_doves_per_generation.append(total_small_dove/100)
+    amount_of_big_doves_per_generation.append(total_big_dove / 100)
 
-with open('hawks_and_doves_' + str(C) + '_' + str(V) + '.csv', 'w') as myfile:
+with open('hawks_and_doves(BigSmall)_' + str(C) + '_' + str(V) + '.csv', 'w') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(amount_of_hawks_per_generation)
-    wr.writerow(amount_of_doves_per_generation)
+    wr.writerow(amount_of_small_doves_per_generation)
+    wr.writerow(amount_of_big_doves_per_generation)
