@@ -9,7 +9,7 @@ C = 100
 
 
 def initialise_population():
-    """Returns a list of 100 lists each of which containing 100 elements which are either 1's or 0's."""
+    """Returns a list of 100 lists each of which containing 100 elements which are either 2's, 1's or 0's."""
     return [[randint(0, 2) for i in range(100)] for x in range(100)]
 
 
@@ -50,11 +50,6 @@ def fitness(chromosome, population):
                     total_payoff += (V-10)
                 else:
                     total_payoff -= 10
-
-            # Regular Hawk Dove
-            # elif player_choice == 0 and other_player == 0:
-            #     # Dove Dove
-            #     total_payoff += V/2
 
             elif player_choice == 2 and other_player == 2:
                 chance = random()
@@ -147,16 +142,18 @@ def evolve(population):
     # Return the crossed-over and mutated population
     return mutated_pop
 
+
 # Initialise a random population
 pop = initialise_population()
 
 # Run the algorithm
-i = 0
 amount_of_hawks_per_generation = list()
 amount_of_small_doves_per_generation = list()
 amount_of_big_doves_per_generation = list()
 for i in range(GENERATIONS):
     pop = evolve(pop)
+
+    # Count number of each bird
     total_hawk = 0
     total_small_dove = 0
     total_big_dove = 0
@@ -164,7 +161,8 @@ for i in range(GENERATIONS):
         total_hawk += x.count(1)
         total_small_dove += x.count(0)
         total_big_dove += x.count(2)
-    # Prints the fitness of the first chromosome, just to have an idea of how the algorithm is working
+
+    # Prints the first chromosome, and the total average number of each type of bird
     print("-----------------------------------------------")
     print(pop[0])
     print("Generation: {}".format((i+1)))
@@ -178,7 +176,8 @@ for i in range(GENERATIONS):
     amount_of_small_doves_per_generation.append(total_small_dove/100)
     amount_of_big_doves_per_generation.append(total_big_dove / 100)
 
-with open('hawks_and_doves(BigSmall)_' + str(C) + '_' + str(V) + '.csv', 'w') as myfile:
+# Writes to csv
+with open('hawks_and_doves(BigSmall)_' + str(C) + '_' + str(V) + '.csv', 'w', newline='') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(amount_of_hawks_per_generation)
     wr.writerow(amount_of_small_doves_per_generation)
