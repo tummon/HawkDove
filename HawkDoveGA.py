@@ -4,8 +4,8 @@ import csv
 MUTATION_PROB = 99.9
 CROSSOVER_PROB = 75
 GENERATIONS = 1000
-V = 60
-C = 100
+V = 50
+C = 55
 
 
 def initialise_population():
@@ -45,11 +45,6 @@ def fitness(chromosome, population):
                     total_payoff += (V-10)
                 else:
                     total_payoff -= 10
-
-            # Regular Hawk Dove
-            # elif player_choice == 0 and other_player == 0:
-            #     # Dove Dove
-            #     total_payoff += V/2
 
         payoff += total_payoff/5
 
@@ -127,11 +122,11 @@ def evolve(population):
     # Return the crossed-over and mutated population
     return mutated_pop
 
+
 # Initialise a random population
 pop = initialise_population()
 
 # Run the algorithm
-i = 0
 amount_of_hawks_per_generation = list()
 amount_of_doves_per_generation = list()
 for i in range(GENERATIONS):
